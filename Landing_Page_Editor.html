@@ -1,0 +1,437 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+
+	<title>Landing page text editor</title>
+	<meta name="description" content="Very basic landing page text editor">
+	<meta name="author" content="Floris Porro">
+
+	<link href="https://fonts.googleapis.com/css?family=Fredoka+One" rel="stylesheet">
+
+	<link href="http://fonts.googleapis.com/css?family=Lato:400,700" rel="stylesheet" type="text/css">
+	
+
+	<style>
+		* {
+			outline: 0px solid transparent;
+		}
+		*:focus {
+			outline: 0px solid transparent;
+		}
+		body {
+			font-size: 1.2rem;
+			line-height: 1.4;
+			max-width: 60rem;
+			margin: 0 auto;
+			padding: 4rem;
+			font-family: 'Lato', sans-serif;
+		}
+		h2 {
+			font-family: 'Fredoka One', cursive;
+			margin-bottom: .5rem;
+			color: #FF8888;
+			border-bottom: 10px solid #FF8888;
+		}
+		h3 {
+			font-family: 'Fredoka One', cursive;
+			margin-bottom: .5rem;
+			color: #77BBDD;
+		}
+		button {
+			padding: 1rem;
+			border: 3px solid #FF8888;
+			background: transparent;
+			font-size: 1rem;
+			font-family:  'Lato', sans-serif;
+			font-weight: 700;
+			color: #FF8888;
+			border-radius: 10px;
+			transition: border 0.3s;
+		}
+		button:hover {
+			border: 3px solid #FFCCCC;
+		}
+		button:active {
+			background: #BBDDEE;
+		}
+		#power_word_container {
+			margin: 0.7rem 0;
+			color: #FF8888;
+			font-weight: 700;
+			font-size: 1.5rem;
+		}
+		section {
+			margin: 1rem auto;
+			text-align: justify;
+
+		}
+		span.lead {
+			font-weight: 700;
+			color: #000;
+		}
+
+		.input_field, pre {
+			background: #BBDDEE;
+			transition: all 0.3s;
+			line-height: 1.75rem;
+			padding: 1rem;
+			display: inline-block;
+			width: 100%;
+		}
+		.input_field:hover {
+			
+		}
+		.input_field:active {
+			
+		}
+		.input_field:focus {
+			background: #77BBDD;
+			color: white;
+		}
+		.input_field span.marked {
+			background: #FF8888;
+			color: white;
+			font-weight: 700;
+			padding: 0.2rem;
+			border-radius: 0.5rem;
+		}
+		.input_field:focus span.marked {
+			background: #FFCCCC;
+		}
+
+		/* 
+			COLOR STYLES
+			RED: FF8888
+			LIGHT RED: FFCCCC
+			WHITE: FFFFFF
+			LIGHTBLUE: BBDDEE
+			BLUE: 77BBDD
+		 */
+	</style>
+
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.4.3/jquery.mark.js"></script>
+
+	<script>
+		var inspiring_words = ["Fulfilled","Liberated","Exhilarated","Unburdened","Brave","Daring","Balanced","Improve","Trust","Immediately","Discover","Profit","Learn","Know","Understand","Powerful","Best","Win","Hot Special","More","Bonus","Exclusive","Extra","You","Free","Health","Guarantee","New","Proven","Safety","Money","Now","Today","Results","Protect","Help","Easy","Amazing","Latest","Extraordina§ry","How to","Worst","Ultimate","Hot","First","Big","Anniversary","Premiere","Basic","Complete","Save","Plus!","Create","Amazing","Audacity","Backbone","Belief","Blissful","Bravery","Breathtaking","Cheer","Conquer","Courage","Daring","Defiance","Delight","Devoted","ExcitedEye-opening","Faith","Fearless","Fulfill","Grateful","Grit","Guts","Happy","Heart","Hero","Hope","Jaw-dropping","Jubilant","Magic","Mind-blowingMiracle","Pluck","Sensational","Spectacular","Spine","Spirit","Staggering","Stunning","Surprising","Triumph","Uplifting","Valor","Victory","Wonderful","Wondrous","Fantastic","Stupendous","Fabulous","Magnificent","Good","Great","The best","Better than ever","Incredible","Unbelievable","Tremendous","Prodigious","Marvelous","Wonderful","Brilliant","Superb","Terrific","Excellent","Remarkable","Exceptional","Phenomenal","Extraordinary","Amazing","Awesome","Colossal","Brilliant","Stunning","Out of this world","Enormous","Splendid","Glorious","Superlative","Grand","Unmatched","Untouchable","Unbeatable","Best ever","Outstanding","Supreme","First-class","First-rate","Joyful","Delightful","Committed","Impressive","Boundless","Unlimited","Abundant","On top of the world","Astonishing","Mind-blowing","Mind-boggling","Sensational","Awe-inspiring","Spectacular","Radiant","Extreme","Especially","Particular","Staggering","Superb","Unparalleled","Unrivaled","Supreme","Invincible","Indomitable","Absolutely","Blissful","Elated","Ecstatic","Jubilant","Happy","Overjoyed","Delighted","Inspired","Rich","Beyond belief","Inconceivable","Stupefying","Unthinkable","Bewildering","Exciting","Astounding","Overwhelming","Extravagant","Beaming","Resplendent","Intense","Radical","Hard to believe","Beyond compare","Incomparable","Consummate","Perfect","Ideal","Flawless","Complete","Ultimate","Indestructible","Determined","Enthusiastic"];
+
+		$.fn.wordcount = function() {
+		    var wom = this.text().match(/\S+/g);
+		    return wom ? wom.length : 0;
+		}
+
+		$.fn.maxchars = function(int) {
+			var that = this;
+			function updateCounter() {
+				var remaining = int - that.text().length;
+				that.next().text(remaining);
+			}
+
+		    this.keyup(updateCounter);
+		    this.change(updateCounter);
+
+		    return this;
+		};
+
+		$.fn.maxwords = function(int) {
+			var that = this;
+			function updateCounter() {
+				that.data("remaining_words", int - that.wordcount());
+				that.next().text('Words: ' + that.data("remaining_words"));
+			}
+
+			this.keyup(updateCounter);
+			this.change(updateCounter);
+
+			return this;
+		};
+
+		$.fn.keyword_highlight = function() {
+			var that = this;
+			this.keyword_count = 0;
+			function highlight() {
+				var keywords = $('#keywords .input_field').html().split("<br>");
+				var options = {
+				    "element": "span",
+				    "className": "marked",
+				    "each": function(m){
+				    	// Jesus christ this is ugly
+				    	that.data("keyword_count", that.data("keyword_count")+1);
+				    }
+				};
+				that.mark(keywords, options);
+			}
+			var keytimer = setTimeout(highlight, 300)
+
+			this.blur(highlight);
+			this.keyup(function(){
+				clearTimeout(keytimer);
+				keytimer = setTimeout(highlight, 500);
+			});
+
+			// Re-highlight everything if the keywords field is changed
+			$('#keywords .input_field').blur(function(){
+				that.data("keyword_count", 0);
+				that.unmark();
+				highlight();
+			});
+			return this;
+		};
+
+		$.fn.keyword_percentage = function() {
+			var that = this;
+			function updatePercentage() {
+				var wordcount = that.wordcount();
+				var keywordcount = that.data("keyword_count");
+				console.log('Wordcount: ' + wordcount);
+				console.log('Keywordcount: ' + keywordcount);
+				console.log('Keyword percentage: ' + wordcount / keywordcount)
+				var percentage = Math.round((keywordcount / wordcount) * 100, 2) > 0 ? Math.round((keywordcount / wordcount) * 100, 2) : 0;
+				that.next().next().text('Keyword percentage: ' + percentage + '%');
+			}
+
+			$('#keywords .input_field').blur(updatePercentage);
+			this.keyup(updatePercentage);
+			this.change(updatePercentage);
+			return this;
+		};
+
+		$( document ).ready(function() {
+
+			// Change some of the behavior of contenteditable to be more suitable for our purposes
+			$('[contenteditable]').on('paste',function(e) {
+			    e.preventDefault();
+			    var text = (e.originalEvent || e).clipboardData.getData('text/plain') || prompt('Paste something..');
+			    window.document.execCommand('insertText', false, text);
+			});
+
+			// Setup character count on the meta title and description
+			$('#title .input_field').maxchars(70);
+			$('#description .input_field').maxchars(156);
+
+			// Setup automatic keyword highlighting
+			$('.input_field').not($('#keywords .input_field')).keyword_highlight();
+
+			// Setup word counter (with recommended 150 words) and keyword percentage for the copy sections
+			window.copy_paragraphs = $('#attention_copy .input_field, #interest_copy .input_field, #desire_copy .input_field, #action_copy .input_field');
+			window.copy_paragraphs.each(function(){
+				$(this).maxwords(150);
+				$(this).keyword_percentage();
+			});
+
+			// Setup save generation
+			$('.input_field').blur(function(){
+				var save = "";
+				$('.input_field').each(function(index) {
+					save += '## ' + $(this).siblings('h3').first().html();
+					save += '\n';
+					save += $(this).html();
+					save += '\n';
+				});
+				$('pre#save_container').html(save);
+			});
+
+			// Setup save restore
+			$('pre#save_container').blur(function(){
+				$(this).html().split('## ').map(function(i){
+					var restore = i.split('\n');
+					$("h3:contains("+restore[0]+")").siblings('.input_field').html(restore[1]);
+				});
+			});
+
+			// Setup the power word dispensaries
+			$('body').on('click', '#power_word_giver', function(){
+				var power_word = inspiring_words[Math.floor(Math.random() * inspiring_words.length)];
+				$(this).next('#power_word_container').text(power_word);
+			});
+
+
+		});
+		
+	</script>
+
+	<!--[if lt IE 9]>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.js"></script>
+	<![endif]-->
+</head>
+
+<body>
+	<h1>Landing page copy tool</h1>
+	<p>Businesses with 30 or more landing pages generate seven times more leads than those with only a handful.</p>
+	<p>This tool aims to make the process of making a new landing page more science based. The following features are included:</p>
+	<ul>
+		<li>If you enter keywords at the top, keywords will be highlighted whenever you're writing. The system will show you what percentage of your copy consists of your keywords. 1 to 2% of your total copy is ideal.</li>
+		<li>It will show you character and word counts for copy where these are important.</li>
+		<li>There are power word dispensaries in appropriate places.</li>
+	</ul>
+	<p>Note: you can get into a pickle if a keyword is the last thing you write on a line. Known bug, haven't got a solution yet.</p>
+
+	<h2>SEO Meta</h2>
+	<p>Fill these in so the background magic can help you write better copy.</p>
+
+	<section id="keywords">
+		<h3>Keywords: </h3>
+		<div class="input_field" contenteditable id="keywords"></div>
+		<div class="counter">
+		</div>
+	</section>
+	<section id="title">
+		<h3>Title: </h3>
+		<div class="input_field" contenteditable>...</div>
+		<div class="counter">
+		</div>
+	</section>
+	<section id="description">
+		<h3>Description: </h3>
+		<div class="input_field" contenteditable>...</div>
+		<div class="counter">
+		</div>
+	</section>
+
+	<h2>AIDA</h2>
+	<p>AIDA is a linear sequential model built on the assumption that consumers move through a series of cognitive (thinking) and affective (feeling) stages culminating in the purchase decision. The steps proposed are as follows:</p>
+	<ul>
+		<li>Attention - Grabbing the reader’s attention to make sure they continue to read-on.</li>
+		<li>Interest - Making sure they’re interested in what you have to offer.</li>
+		<li>Desire - Creating an unquenchable desire to claim your offer.</li>
+		<li>Action - Making your reader accomplish your desired action or outcome.</li>
+	</ul>
+
+	<h2>Attention</h2>
+
+	<section id="hero">
+		<p><span class="lead">On the average, five times as many people read the headlines as read the body copy.</span></p>
+		<p>Keep in mind that the headline is the most important piece of copy on your landing page. Statistics have shown that 80% of people don’t read past the headline if it doesn’t grab their attention.</p>
+		<p><strong>Examples:</strong>
+			<ul>
+				<li>The Summer Body of Your Dreams Awaits. $49 for One Month of Unlimited Hot Yoga.</li>
+				<li>Marketing is DEAD! Growth hacking courses now available!</li>
+			</ul>
+		</p>
+		<button id="power_word_giver">Give me a power word!</button>
+		<div id="power_word_container"></div>
+		<h3>Hero H1: </h3>
+		<div class="input_field" contenteditable>...</div>
+	</section>
+	
+	<section id="attention_header">
+		<h3>Attention paragraph header:</h3>
+		<p>It’s always best to start by listing what you know about your target audience. This includes demographics, likes, dislikes, desires, pain points, etc. Touch on their pain points to grab their attention.</p>
+		<div class="input_field" contenteditable>...</div>
+		<div class="counter">
+		</div>
+	</section>
+	<section id="attention_copy">
+		<h3>Attention copy: </h3>
+		<div class="input_field" contenteditable>...</div>
+		<div class="counter">
+		</div>
+		<div class="keyword_percentage">
+		</div>
+	</section>
+
+	<h2>Interest</h2>
+	<p>Ask yourself, what about my product would make it interesting to my target audience?</p>
+	<p>Does it solve a problem? Does it offer a solution? Does it have benefits? How can I explain this to my audience?</p>
+	<p>Use:</p>
+	<ul>
+		<li><strong>Facts and statistics</strong> - "80% of all hot yoga regulars note an increase in positive mental and physical benefits"</li>
+		<li><strong>A captivating story</strong> - "Emily Daveres was tired and fed up with being out of shape until she tried hot yoga for the first time…"</li>
+		<li><strong>A pain point felt by many</strong> - "Wouldn’t it be nice to have a physical activity that is accessible to all fitness levels and is guaranteed to help you get in shape?"</li>
+	</ul>
+
+	<section id="interest_header">
+		<h3>Interest paragraph header:</h3>
+		<div class="input_field" contenteditable>...</div>
+		<div class="counter">
+		</div>
+	</section>
+
+	<section id="interest_copy">
+		<h3>Interest copy: </h3>
+		<div class="input_field" contenteditable>...</div>
+		<div class="counter">
+		</div>
+		<div class="keyword_percentage">
+		</div>
+	</section>
+
+	<h2>Desire</h2>
+	<p>At this step, you need to further qualify the prospect and inform him or her as to what they can expect if they continue deeper into your website or decide to use your services.</p>
+	<p>An easy way to think of it is that desire has intent. Before you can create the desire to buy, you must have created interest. Once interest is created it will mature into desire. In other words, desire is the stronger, more developed version of interest.</p>
+	<p><strong>How can you create desire?</strong></p>
+	<p>Again, by knowing who your target audience is you’ll be able to pinpoint their pain points, urges, likes, and desires.</p>
+	<p>The best way to do so it to use words — depending on your desired outcome — that are linked with emotion. What emotion do you want them to feel to influence their action?</p>
+	<button id="power_word_giver">Give me a power word!</button>
+	<div id="power_word_container"></div>
+
+	<p>Your goal in this section is to make your visitor say “I need this now!”</p>
+
+	<section id="desire_header">
+		<h3>Desire paragraph header:</h3>
+		<div class="input_field" contenteditable>...</div>
+		<div class="counter">
+		</div>
+	</section>
+
+	<section id="desire_copy">
+		<h3>Desire copy: </h3>
+		<div class="input_field" contenteditable>...</div>
+		<div class="counter">
+		</div>
+		<div class="keyword_percentage">
+		</div>
+	</section>
+
+	<h2>Action</h2>
+	<p>This is the part when your copywriting efforts culminate into one action. This action is the outcome you’ve been aiming for throughout the whole landing page.</p>
+	<p>Examples:</p>
+	<ul>
+		<li><strong>Newsletter</strong> - Having the prospect join your newsletter is a great way to provide them the content they want to see and to remind them you exist on a consistent basis. When a prospect consistently sees your brand (whether in the form of names, logos, flyers, emails, radio ads, etc) they are more likely to come to you when they require the services or products you provide.</li>
+		<li><strong>Phone call</strong> - Perhaps the ultimate action you’re looking for is to have the prospect pick up the phone and call you, or send a message using the form on your Contact page; in most cases, though, that’s too big of a leap for a visitor from search to take within 30 days…they simply wouldn’t be ready. You need to build more rapport or establish more credibility, and that’s why you should also present a wealth of information in the form of content marketing and blog posts which pull them further into your website and establishes greater credibility.</li>
+		<li><strong>Purchase decision</strong> - Buy my product</li>
+	</ul>
+
+	<section id="action_header">
+		<h3>Action paragraph header:</h3>
+		<div class="input_field" contenteditable>...</div>
+		<div class="counter">
+		</div>
+	</section>
+
+	<section id="action_copy">
+		<h3>Action copy: </h3>
+		<div class="input_field" contenteditable>...</div>
+		<div class="counter">
+		</div>
+		<div class="keyword_percentage">
+		</div>
+	</section>
+
+	<h2>Checklist</h2>
+	<ul>
+		<li>Include at least one link to an external domain from your landing page.</li>
+		<li>Images: make sure the filename is relevant. The keyword can be identical to the filename, but try to make the description something relevant. images.google.com produces a lot of traffic! Ideally, make sure the description refers to the topic of the landing page in some way.</li>
+		<li>Call to action button: there is no conclusive evidence that one color is better than another color. Just make sure that the one call to action that is most important to your business <strong>is a different color from everything else on the page</strong>. I.e. if you have a blue themed page, make the call to action you want people to respond to orange.</li>
+	</ul>
+
+	<h2>Save and restore</h2>
+	<p>This goes both ways. If you paste text in here it will replace the contents of the form.</p>
+	<section>
+		<pre id="save_container" contenteditable>
+		</pre>
+	</section>
+
+
+	<h2>Sources and other tools:</h2>
+	<ul>
+		<li>http://www.multiversemediagroup.com/website-tips/how-to-achieve-effective-landing-pages-using-the-aida-concept/</li>
+		<li>http://blog.wishpond.com/post/115675436651/aida-landing-page-formula</li>
+		<li>https://www.quicksprout.com/the-definitive-guide-to-copywriting-chapter-3/</li>
+		<li>http://coschedule.com/headline-analyzer</li>
+		<li>http://keywordshitter.com/</li>
+	</ul>
+</body>
+</html>
