@@ -150,7 +150,8 @@
 
 		$.fn.keyword_highlight = function() {
 			var that = this;
-			this.keyword_count = 0;
+			this.data("keyword_count", 0);
+
 			function highlight() {
 				var keywords = $('#keywords .input_field').html().split("<br>");
 				var options = {
