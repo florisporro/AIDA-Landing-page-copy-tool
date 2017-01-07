@@ -212,13 +212,11 @@
 			$('#title .input_field').maxchars(70);
 			$('#description .input_field').maxchars(156);
 
-			// Setup automatic keyword highlighting
-			$('.input_field').not($('#keywords .input_field')).keyword_highlight();
-
 			// Setup word counter (with recommended 150 words) and keyword percentage for the copy sections
 			window.copy_paragraphs = $('#attention_copy .input_field, #interest_copy .input_field, #desire_copy .input_field, #action_copy .input_field');
 			window.copy_paragraphs.each(function(){
 				$(this).maxwords(150);
+				$(this).keyword_highlight();
 				$(this).keyword_percentage();
 			});
 
